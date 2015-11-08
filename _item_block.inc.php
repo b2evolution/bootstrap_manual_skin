@@ -77,11 +77,19 @@ if( $disp == 'single' )
 			) );*/
 		// ------------------------- END OF PREV/NEXT POST LINKS -------------------------
 
-	$action_links = $Item->get_edit_link( array( // Link to backoffice for editing
+	// Link for editing:
+	$action_links = $Item->get_edit_link( array(
 			'before' => '',
 			'after'  => '',
 			'text'   => $Item->is_intro() ? get_icon( 'edit' ).' '.T_('Edit Intro') : '#',
 			'class'  => button_class( 'text' ),
+		) );
+	// Link for duplicating:
+	$action_links .= $Item->get_copy_link( array(
+			'before' => '',
+			'after'  => '',
+			'text'   => '#icon#',
+			'class'  => button_class(),
 		) );
 	if( $Item->is_intro() && $Item->ityp_ID > 1500 )
 	{ // Link to edit category
@@ -95,6 +103,11 @@ if( $disp == 'single' )
 				) );
 		}
 	}
+	if( ! empty( $action_links ) )
+	{	// Group all action icons:
+		$action_links = '<div class="'.button_class( 'group' ).'">'.$action_links.'</div>';
+	}
+
 	if( $Item->status != 'published' )
 	{
 		$Item->format_status( array(
@@ -104,12 +117,47 @@ if( $disp == 'single' )
 	$Item->title( array(
 			'link_type'  => $params['item_link_type'],
 			'before'     => '<div class="evo_post_title"><h1>',
-			'after'      => '</h1><div class="'.button_class( 'group' ).'">'.$action_links.'</div></div>',
+			'after'      => '</h1>'.$action_links.'</div>',
 			'nav_target' => false,
 		) );
 	?>
 
 	<?php
+	if( $disp == 'single' )
+	{
+		?>
+		<div class="evo_container evo_container__item_single">
+		<?php
+		// ------------------------- "Item Single" CONTAINER EMBEDDED HERE --------------------------
+		// WARNING: EXPERIMENTAL -- NOT RECOMMENDED FOR PRODUCTION -- MAY CHANGE DRAMATICALLY BEFORE RELEASE.
+		// Display container contents:
+		skin_container( /* TRANS: Widget container name */ NT_('Item Single'), array(
+			'widget_context' => 'item',	// Signal that we are displaying within an Item
+			// The following (optional) params will be used as defaults for widgets included in this container:
+			// This will enclose each widget in a block:
+			'block_start' => '<div class="$wi_class$">',
+			'block_end' => '</div>',
+			// This will enclose the title of each widget:
+			'block_title_start' => '<h3>',
+			'block_title_end' => '</h3>',
+			// Template params for "Item Tags" widget
+			'widget_coll_item_tags_before'    => '<div class="small text-muted">'.T_('Tags').': ',
+			'widget_coll_item_tags_after'     => '</div>',
+			'widget_coll_item_tags_separator' => ', ',
+			// Template params for "Small Print" widget
+			'widget_coll_small_print_before'         => '<p class="small text-muted">',
+			'widget_coll_small_print_after'          => '</p>',
+			'widget_coll_small_print_display_author' => false,
+			// Params for skin file "_item_content.inc.php"
+			'widget_coll_item_content_params' => $params,
+		) );
+		// ----------------------------- END OF "Item Single" CONTAINER -----------------------------
+		?>
+		</div>
+		<?php
+	}
+	else
+	{
 		// ---------------------- POST CONTENT INCLUDED HERE ----------------------
 		skin_include( '_item_content.inc.php', $params );
 		// Note: You can customize the default item content by copying the generic
@@ -127,6 +175,11 @@ if( $disp == 'single' )
 				) );
 
 			echo '<p class="small text-muted">';
+			$Item->author( array(
+					'before'    => T_('Created by '),
+					'after'     => ' &bull; ',
+					'link_text' => 'name',
+				) );
 			$Item->lastedit_user( array(
 					'before'    => T_('Last edit by '),
 					'after'     => T_(' on ').$Item->get_mod_date( 'F jS, Y' ),
@@ -138,17 +191,33 @@ if( $disp == 'single' )
 					'link_text' => T_('View history')
 				) );
 		}
+	}
 	?>
 
 	<?php
 		// ------------------ FEEDBACK (COMMENTS/TRACKBACKS) INCLUDED HERE ------------------
 		skin_include( '_item_feedback.inc.php', array_merge( $params, array(
-				'before_section_title' => '<h3 class="comments_list_title">',
+				'before_section_title' => '<h3 class="evo_comment__list_title">',
 				'after_section_title'  => '</h3>',
 			) ) );
 		// Note: You can customize the default item feedback by copying the generic
 		// /skins/_item_feedback.inc.php file into the current skin folder.
 		// ---------------------- END OF FEEDBACK (COMMENTS/TRACKBACKS) ---------------------
+	?>
+
+	<?php
+		// ------------------ WORKFLOW PROPERTIES INCLUDED HERE ------------------
+		skin_include( '_item_workflow.inc.php' );
+		// ---------------------- END OF WORKFLOW PROPERTIES ---------------------
+	?>
+
+	<?php
+		// ------------------ META COMMENTS INCLUDED HERE ------------------
+		skin_include( '_item_meta_comments.inc.php', array(
+				'comment_start'         => '<article class="evo_comment evo_comment__meta panel panel-default">',
+				'comment_end'           => '</article>',
+			) );
+		// ---------------------- END OF META COMMENTS ---------------------
 	?>
 
 	<?php

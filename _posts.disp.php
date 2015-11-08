@@ -88,13 +88,13 @@ elseif( !empty( $cat ) && ( $cat > 0 ) )
 	if( ! empty( $intro_Item ) )
 	{ // We have a featured/intro post to display:
 		$Item = $intro_Item;
-		echo '<div id="styled_content_block">'; // Beginning of posts display TODO: get rid of this ID, use class .evo_content_block instead
+		echo '<div class="evo_content_block">'; // Beginning of posts display
 		// ---------------------- ITEM BLOCK INCLUDED HERE ------------------------
 		skin_include( '_item_block.inc.php', array_merge( array(
 				'feature_block'     => true,
 				'content_mode'      => 'auto',		// 'auto' will auto select depending on $disp-detail
 				'intro_mode'        => 'normal',	// Intro posts will be displayed in normal mode
-				'item_class'        => 'jumbotron evo_post evo_content_block',
+				'item_class'        => 'well evo_post evo_content_block',
 				'disp_comments'     => false,
 				'disp_comment_form' => false,
 				'disp_notification' => false,
@@ -139,10 +139,10 @@ elseif( !empty( $cat ) && ( $cat > 0 ) )
 		global $c, $ReqURI;
 		$c = 1; // Display comments
 
-		echo '<div id="styled_content_block">'; // Beginning of posts display TODO: get rid of this ID, use class .evo_content_block instead
+		echo '<div class="evo_content_block">'; // Beginning of posts display
 		// ------------------ FEEDBACK (COMMENTS/TRACKBACKS) INCLUDED HERE ------------------
 		skin_include( '_item_feedback.inc.php', array_merge( array(
-				'before_section_title' => '<h3 class="comments_list_title">',
+				'before_section_title' => '<h3 class="evo_comment__list_title">',
 				'after_section_title'  => '</h3>',
 				'Item'                 => $intro_Item,
 				'form_title_text'      => T_('Comment form'),
@@ -170,8 +170,6 @@ else
 		skin_include( '_item_list.inc.php', array(
 				'before_title'   => '<h3>',
 				'after_title'    => '</h3>',
-				'before_content' => '<div class="excerpt">',
-				'after_content'  => '</div>',
 			) );
 		// ----------------------------END ITEM BLOCK  ----------------------------
 	}
